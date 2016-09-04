@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="25" height="25" tilewidth="16" tileheight="16" nextobjectid="1">
+ <tileset firstgid="1" name="1" tilewidth="16" tileheight="16" tilecount="663">
+  <image source="../sprites/tiles/1.png" width="816" height="208"/>
+ </tileset>
+ <layer name="Warstwa Kafelków 2" width="25" height="25">
+  <data encoding="base64" compression="zlib">
+   eJy1lTFOAzEQRe0FcSJScBw6CmjhHpEIxRJSwyUgEkSIggRquAUdRGJGssXXZ8ZeL6J4Uljb8+yZwT4KIRz/IydCL9wRS/h9GP2x0rf8fS/ajkthTlw5cWqgA/eyVo+MzRO98NIQdwnxvHOoYx1/eCbHuTBrwHJ0EnOH2IW6PI7MFeeLz45/Ww5vrZerGuhYAFavHEQ/hxcDHAtC63gqnBHeOXIc/v+oOa6FG6LmYDTvU/qGjjfhneiDXa9S72SHrnsFrH707hLlM/yu0X3iQVglPgp7Ucb21RTOflvIqeXwepzHsR6e46/nwFppTlcGufdLDqtnLYfHEzlK8TJ6D34ltgP2ww4eb+3l0j5a6jHEwXP0fGMcrXXKDq9nMR6ux/sV3+CSozVXui6/xbHydrEDa8ZsaZ2+wRvHgefXufvCJKFzJrGOvjtdJ3deV1+vc78BW5Kb/Q==
+  </data>
+ </layer>
+ <layer name="Warstwa Kafelków 1" width="25" height="25">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFo2BkAncg9gBiTzTx1YzUMb8SiKuAuBqIa4C4FknuHpXsAIG1QLwOiNejiVPTDhB4iEWM2nZgA4JMtLdjFIyCUTAKhiIAAIBECYc=
+  </data>
+ </layer>
+</map>
