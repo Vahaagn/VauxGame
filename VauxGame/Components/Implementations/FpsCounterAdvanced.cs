@@ -2,14 +2,12 @@
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using System.Linq;
-
-using IUpdateable = VauxGame.Components.IUpdateable;
-using IDrawable = VauxGame.Components.IDrawable;
 using MonoGame.Extended.BitmapFonts;
+using VauxGame.Components;
 
 namespace VauxGame
 {
-    public class FpsCounterAdvanced : IUpdateable, IDrawable
+    public class FpsCounterAdvanced : IComponent
     {
         #region - Fields -
         private readonly Queue<float> _sampleBuffer = new Queue<float>();
@@ -17,6 +15,8 @@ namespace VauxGame
         #endregion
 
         #region - Properties -
+        public bool IsVisible => true;
+        public ComponentTypeEnum ComponentType => ComponentTypeEnum.GameInterface;
         public long TotalFrames { get; private set; }
         public float AverageFramesPerSecond { get; private set; }
         public float CurrentFramesPerSecond { get; private set; }

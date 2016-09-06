@@ -1,15 +1,13 @@
 ﻿using System;
 using MonoGame.Extended.BitmapFonts;
 using Microsoft.Xna.Framework;
-
-using IUpdateable = VauxGame.Components.IUpdateable;
-using IDrawable = VauxGame.Components.IDrawable;
 using MonoGame.Extended;
 using Microsoft.Xna.Framework.Graphics;
+using VauxGame.Components;
 
 namespace VauxGame
 {
-    public class FpsCounter : IUpdateable, IDrawable
+    public class FpsCounter : IComponent
     {
         #region - Constants -
         private static readonly TimeSpan ONE_SECOND_TSTAMP = TimeSpan.FromSeconds(1);
@@ -22,6 +20,8 @@ namespace VauxGame
         #endregion
 
         #region - Properties -
+        public bool IsVisible => true;
+        public ComponentTypeEnum ComponentType => ComponentTypeEnum.GameInterface;
         public int FramesPerSecond { get; private set; }
         #endregion
 

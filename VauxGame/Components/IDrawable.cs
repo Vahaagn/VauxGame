@@ -7,6 +7,8 @@ namespace VauxGame.Components
 {
     public interface IDrawable
     {
+        bool IsVisible { get; }
+
         void LoadContent(ContentManager content);
         void UnloadContent(ContentManager content);
 

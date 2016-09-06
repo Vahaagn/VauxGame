@@ -5,17 +5,27 @@ using MonoGame.Extended;
 
 namespace VauxGame.Components
 {
-    public class Cursor : IUpdateable, IDrawable, IMovable
+    public class Cursor : IComponent, IMovable
     {
+        #region - Fields -
         private Vector2 _position;
         private Vector2 _size;
         private Texture2D _texture;
+        #endregion
 
+        #region - Properties -
+        public bool IsVisible => true;
+        public ComponentTypeEnum ComponentType => ComponentTypeEnum.GameInterface;
+        #endregion
+
+        #region - Constructors -
         public Cursor()
         {
             _size = new Vector2(25);
         }
+        #endregion
 
+        #region - Public methods -
         public void MoveTo(Vector2 position)
         {
             _position = position;
@@ -33,7 +43,7 @@ namespace VauxGame.Components
 
         public void Update(GameTime gameTime)
         {
-            throw new NotImplementedException();
+            // TODO: Implement interactions with buttons
         }
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
@@ -41,6 +51,7 @@ namespace VauxGame.Components
             var destinationRectangle = new Rectangle(_position.ToPoint(), _size.ToPoint());
             spriteBatch.Draw(_texture, destinationRectangle, Color.White);
         }
+        #endregion
     }
 }
 

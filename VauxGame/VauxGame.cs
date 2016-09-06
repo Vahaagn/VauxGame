@@ -17,24 +17,22 @@ namespace VauxGame
     public class VauxGame : Game
     {
         #region - CONSTANTS -
-
         private const bool CURSOR_VISIBILITY = false;
         private const bool SYNCHRONIZE_WITH_VERTICAL_RETRACE = false;
         private const int WINDOW_WIDTH = 800;
         private const int WINDOW_HEIGHT = 480;
-
         #endregion
 
+        #region - Fields -
         private GraphicsDeviceManager graphics;
         private ViewportAdapter _viewportAdapter;
-        private FpsCounterAdvanced _fpsCounter;
+        private ComponentSubject _componentSubject;
         private SpriteBatch _spriteBatch;
         private Camera2D _camera;
         private TiledMap _map;
-        private Texture2D _icon;
-        private Sprite _sprite;
-        private Cursor _cursor;
+        #endregion
 
+        #region - Constructors -
         public VauxGame()
         {
             graphics = new GraphicsDeviceManager(this) { SynchronizeWithVerticalRetrace = SYNCHRONIZE_WITH_VERTICAL_RETRACE };
@@ -43,6 +41,7 @@ namespace VauxGame
             IsMouseVisible = CURSOR_VISIBILITY;
             IsFixedTimeStep = false;
         }
+        #endregion
 
         /// <summary>
         /// Allows the game to perform any initialization it needs to before starting to run.
@@ -52,15 +51,15 @@ namespace VauxGame
         /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
             _viewportAdapter = new BoxingViewportAdapter(Window, GraphicsDevice, WINDOW_WIDTH, WINDOW_HEIGHT);
             _camera = new Camera2D(_viewportAdapter) {
                 MinimumZoom = 1f,
                 MaximumZoom = 3f
             };
-            _fpsCounter = new FpsCounterAdvanced();
 
-            _cursor = new Cursor();
+            _componentSubject = new ComponentSubject();
+            _componentSubject.AddComponent(new FpsCounterAdvanced())
+                             .AddComponent(new Cursor());
 
             Window.AllowUserResizing = true;
             Window.Position = Point.Zero;
@@ -75,14 +74,9 @@ namespace VauxGame
         /// </summary>
         protected override void LoadContent()
         {
-            // Create a new SpriteBatch, which can be used to draw textures.
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            //TODO: use this.Content to load your game content here 
-            _icon = Content.Load<Texture2D>("Icon");
-            _sprite = new Sprite(_icon) { Position = new Vector2(600, 240) };
-            _fpsCounter.LoadContent(Content);
-            _cursor.LoadContent(Content);
+            _componentSubject.LoadContent(Content);
 
             _map = this.Content.Load<TiledMap>("maps/map2");
             _camera.LookAt(new Vector2(_map.WidthInPixels, _map.HeightInPixels) * 0.5f);
@@ -101,8 +95,6 @@ namespace VauxGame
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
             #endif
-            
-            // TODO: Add your update logic here
 
             var deltaSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
             var keyboardState = Keyboard.GetState();
@@ -129,20 +121,16 @@ namespace VauxGame
 
             if (keyboardState.IsKeyDown(Keys.R)) {
                 _camera.ZoomIn(zoomFactor);
-                _sprite.Scale = Vector2.Multiply(_sprite.Scale, 1 + zoomFactor);
             }
 
             if (keyboardState.IsKeyDown(Keys.F)) {
                 _camera.ZoomOut(zoomFactor);
-                _sprite.Scale = Vector2.Multiply(_sprite.Scale, 1 - zoomFactor);
             }
 
-            _sprite.Rotation += MathHelper.ToRadians(100) * deltaSeconds;
-            //_sprite.Position = _camera.ScreenToWorld(mouseState.X, mouseState.Y);
-            var cursorMoveCommand = new MoveCommand(_cursor, new Vector2(mouseState.X, mouseState.Y));
+            var cursorMoveCommand = new MoveCommand(_componentSubject.Cursor, new Vector2(mouseState.X, mouseState.Y));
             cursorMoveCommand.Execute();
 
-            _fpsCounter.Update(gameTime);
+            _componentSubject.Update(gameTime);
 
             base.Update(gameTime);
         }
@@ -155,28 +143,7 @@ namespace VauxGame
         {
             graphics.GraphicsDevice.Clear(Color.CornflowerBlue);
             
-            // Game World
-            _spriteBatch.Begin(samplerState: SamplerState.PointClamp, 
-                blendState: BlendState.AlphaBlend, 
-                transformMatrix: _camera.GetViewMatrix());
-            
-            _map.Draw(_spriteBatch);
-            _spriteBatch.Draw(_sprite);
-
-            _spriteBatch.End();
-            // End of Game World
-
-            // Game UI
-            _spriteBatch.Begin(
-                samplerState: SamplerState.PointClamp, 
-                blendState: BlendState.AlphaBlend
-            );
-
-            _fpsCounter.Draw(gameTime, _spriteBatch);
-            _cursor.Draw(gameTime, _spriteBatch);
-
-            _spriteBatch.End();
-            // End of Game UI
+            _componentSubject.Draw(gameTime, _spriteBatch, _camera);
 
             base.Draw(gameTime);
         }
