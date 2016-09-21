@@ -1,4 +1,6 @@
 ﻿using System;
+using MonoGame.Extended;
+using MonoGame.Extended.Maps.Tiled;
 using VauxGame.Components;
 
 namespace VauxGame
@@ -6,6 +8,9 @@ namespace VauxGame
     public class WorldComponent : IComponent
     {
         #region - Fields -
+
+        private TiledMap _map;
+        private readonly Camera2D _camera;
 
         #endregion
 
@@ -15,12 +20,16 @@ namespace VauxGame
 
         public bool IsVisible => true;
 
+        public int WidthInPixels => _map.WidthInPixels;
+        public int HeightInPixels => _map.HeightInPixels;
+
         #endregion
 
         #region - Constructors -
 
-        public WorldComponent()
+        public WorldComponent(Camera2D camera)
         {
+            _camera = camera;
         }
 
         #endregion
@@ -29,7 +38,7 @@ namespace VauxGame
 
         public void LoadContent(Microsoft.Xna.Framework.Content.ContentManager content)
         {
-            throw new NotImplementedException();
+            _map = content.Load<TiledMap>("maps/map2");
         }
 
         public void UnloadContent(Microsoft.Xna.Framework.Content.ContentManager content)
@@ -39,12 +48,12 @@ namespace VauxGame
 
         public void Draw(Microsoft.Xna.Framework.GameTime gameTime, Microsoft.Xna.Framework.Graphics.SpriteBatch spriteBatch)
         {
-            throw new NotImplementedException();
+            _map.Draw(spriteBatch, _camera);
         }
 
         public void Update(Microsoft.Xna.Framework.GameTime gameTime)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         #endregion

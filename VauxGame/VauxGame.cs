@@ -1,14 +1,8 @@
-﻿using System;
-
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Storage;
 using Microsoft.Xna.Framework.Input;
-using MonoGame.Extended.Maps.Tiled;
 using MonoGame.Extended;
 using MonoGame.Extended.ViewportAdapters;
-using MonoGame.Extended.Sprites;
-using MonoGame.Extended.BitmapFonts;
 using VauxGame.Components;
 using VauxGame.Commands;
 
@@ -24,25 +18,24 @@ namespace VauxGame
         #endregion
 
         #region - Fields -
-        private GraphicsDeviceManager graphics;
+        private readonly GraphicsDeviceManager _graphics;
         private ViewportAdapter _viewportAdapter;
         private ComponentSubject _componentSubject;
         private SpriteBatch _spriteBatch;
         private Camera2D _camera;
-        private TiledMap _map;
         #endregion
 
         #region - Constructors -
         public VauxGame()
         {
-            graphics = new GraphicsDeviceManager(this) { SynchronizeWithVerticalRetrace = SYNCHRONIZE_WITH_VERTICAL_RETRACE };
+            _graphics = new GraphicsDeviceManager(this) { SynchronizeWithVerticalRetrace = SYNCHRONIZE_WITH_VERTICAL_RETRACE };
             Content.RootDirectory = "Content";
 
             IsMouseVisible = CURSOR_VISIBILITY;
             IsFixedTimeStep = false;
         }
         #endregion
-
+        
         /// <summary>
         /// Allows the game to perform any initialization it needs to before starting to run.
         /// This is where it can query for any required services and load any non-graphic
@@ -59,7 +52,8 @@ namespace VauxGame
 
             _componentSubject = new ComponentSubject();
             _componentSubject.AddComponent(new FpsCounterAdvanced())
-                             .AddComponent(new Cursor());
+                             .AddComponent(new Cursor())
+                             .AddComponent(new WorldComponent(_camera));
 
             Window.AllowUserResizing = true;
             Window.Position = Point.Zero;
@@ -77,9 +71,8 @@ namespace VauxGame
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             _componentSubject.LoadContent(Content);
-
-            _map = this.Content.Load<TiledMap>("maps/map2");
-            _camera.LookAt(new Vector2(_map.WidthInPixels, _map.HeightInPixels) * 0.5f);
+            
+            _camera.LookAt(new Vector2(_componentSubject.WorldComponent.WidthInPixels, _componentSubject.WorldComponent.HeightInPixels) * 0.5f);
         }
 
         /// <summary>
@@ -95,7 +88,7 @@ namespace VauxGame
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
             #endif
-
+            
             var deltaSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
             var keyboardState = Keyboard.GetState();
             var mouseState = Mouse.GetState();
@@ -141,7 +134,7 @@ namespace VauxGame
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            graphics.GraphicsDevice.Clear(Color.CornflowerBlue);
+            _graphics.GraphicsDevice.Clear(Color.CornflowerBlue);
             
             _componentSubject.Draw(gameTime, _spriteBatch, _camera);
 

@@ -23,6 +23,8 @@ namespace VauxGame
 
         #region - Properties -
         public Cursor Cursor => _components.OfType<Cursor>().SingleOrDefault();
+        public WorldComponent WorldComponent => _components.OfType<WorldComponent>().SingleOrDefault();
+
         #endregion
 
         #region - Public methods -
@@ -93,10 +95,10 @@ namespace VauxGame
                 transformMatrix: camera.GetViewMatrix()
             );
 
-            foreach (var component in _components
-                .Where(c => c.IsVisible && 
-                    c.ComponentType == ComponentTypeEnum.World)
-            ) {
+            foreach (var component in _components.Where(c => c.IsVisible &&
+                                                             c.ComponentType == ComponentTypeEnum.World)
+            )
+            {
                 component.Draw(gameTime, spriteBatch);
             }
 
