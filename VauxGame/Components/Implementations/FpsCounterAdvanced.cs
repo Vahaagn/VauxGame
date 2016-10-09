@@ -57,7 +57,7 @@ namespace VauxGame
             //Update(gameTime);
 
             spriteBatch.DrawString(
-                bitmapFont: _bitmapFont, 
+                _bitmapFont, 
                 text: $"FPS: {AverageFramesPerSecond:0}", 
                 position: Vector2.One, 
                 color: Color.Goldenrod

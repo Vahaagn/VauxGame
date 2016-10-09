@@ -2,9 +2,12 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
+using MonoGame.Extended.BitmapFonts;
 using MonoGame.Extended.ViewportAdapters;
 using VauxGame.Components;
-using VauxGame.Commands;
+using VauxGame.Components.Implementations;
+using VauxGame.Handlers;
+using VauxGame.Utils;
 
 namespace VauxGame
 {
@@ -23,6 +26,8 @@ namespace VauxGame
         private ComponentSubject _componentSubject;
         private SpriteBatch _spriteBatch;
         private Camera2D _camera;
+        private InputHandler _inputHandler;
+        private CameraHandler _cameraHandler;
         #endregion
 
         #region - Constructors -
@@ -45,20 +50,33 @@ namespace VauxGame
         protected override void Initialize()
         {
             _viewportAdapter = new BoxingViewportAdapter(Window, GraphicsDevice, WINDOW_WIDTH, WINDOW_HEIGHT);
-            _camera = new Camera2D(_viewportAdapter) {
+            _camera = new Camera2D(_viewportAdapter)
+            {
                 MinimumZoom = 1f,
-                MaximumZoom = 3f
+                MaximumZoom = 3f,
+                Zoom = 3f
             };
+
+            ComponentManager.Instance
+                .InitializeComponents(this)
+                .Register(_camera)
+                .Build();
+
+            _inputHandler = ComponentManager.Instance.GetInstance<InputHandler>();
+            _cameraHandler = new CameraHandler(_camera, _inputHandler);
 
             _componentSubject = new ComponentSubject();
             _componentSubject.AddComponent(new FpsCounterAdvanced())
-                             .AddComponent(new Cursor())
-                             .AddComponent(new WorldComponent(_camera));
+                .AddComponent(new Cursor())
+                .AddComponent<WorldComponent>()
+                .AddComponent(new Player());
+
+            _cameraHandler.LookAt(_componentSubject.Player);
 
             Window.AllowUserResizing = true;
             Window.Position = Point.Zero;
             Window.Title = $"Window: ({WINDOW_WIDTH}, {WINDOW_HEIGHT}) | Mouse visibility: {CURSOR_VISIBILITY}";
-            
+
             base.Initialize();
         }
 
@@ -71,8 +89,9 @@ namespace VauxGame
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             _componentSubject.LoadContent(Content);
-            
-            _camera.LookAt(new Vector2(_componentSubject.WorldComponent.WidthInPixels, _componentSubject.WorldComponent.HeightInPixels) * 0.5f);
+
+            var debugSpriteFont = Content.Load<BitmapFont>("fonts/montserrat-32");
+            InGameDebugger.Initialize(_spriteBatch, debugSpriteFont);
         }
 
         /// <summary>
@@ -91,26 +110,24 @@ namespace VauxGame
             
             var deltaSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
             var keyboardState = Keyboard.GetState();
-            var mouseState = Mouse.GetState();
 
             if (keyboardState.IsKeyDown(Keys.Escape))
                 Exit();
 
-            const float cameraSpeed = 75f;
             const float zoomSpeed = 1f;
             var zoomFactor = zoomSpeed * deltaSeconds;
 
-            if (keyboardState.IsKeyDown(Keys.W) || keyboardState.IsKeyDown(Keys.Up))
-                _camera.Move(new Vector2(0, -cameraSpeed)*deltaSeconds);
+            //if (keyboardState.IsKeyDown(Keys.W) || keyboardState.IsKeyDown(Keys.Up))
+            //    _camera.Move(new Vector2(0, -cameraSpeed)*deltaSeconds);
 
-            if (keyboardState.IsKeyDown(Keys.A) || keyboardState.IsKeyDown(Keys.Left))
-                _camera.Move(new Vector2(-cameraSpeed, 0)*deltaSeconds);
+            //if (keyboardState.IsKeyDown(Keys.A) || keyboardState.IsKeyDown(Keys.Left))
+            //    _camera.Move(new Vector2(-cameraSpeed, 0)*deltaSeconds);
 
-            if (keyboardState.IsKeyDown(Keys.S) || keyboardState.IsKeyDown(Keys.Down))
-                _camera.Move(new Vector2(0, cameraSpeed)*deltaSeconds);
+            //if (keyboardState.IsKeyDown(Keys.S) || keyboardState.IsKeyDown(Keys.Down))
+            //    _camera.Move(new Vector2(0, cameraSpeed)*deltaSeconds);
 
-            if (keyboardState.IsKeyDown(Keys.D) || keyboardState.IsKeyDown(Keys.Right))
-                _camera.Move(new Vector2(cameraSpeed, 0)*deltaSeconds);
+            //if (keyboardState.IsKeyDown(Keys.D) || keyboardState.IsKeyDown(Keys.Right))
+            //    _camera.Move(new Vector2(cameraSpeed, 0)*deltaSeconds);
 
             if (keyboardState.IsKeyDown(Keys.R)) {
                 _camera.ZoomIn(zoomFactor);
@@ -120,9 +137,8 @@ namespace VauxGame
                 _camera.ZoomOut(zoomFactor);
             }
 
-            var cursorMoveCommand = new MoveCommand(_componentSubject.Cursor, new Vector2(mouseState.X, mouseState.Y));
-            cursorMoveCommand.Execute();
-
+            _inputHandler.Update(gameTime);
+            _cameraHandler.Handle();
             _componentSubject.Update(gameTime);
 
             base.Update(gameTime);
@@ -137,6 +153,8 @@ namespace VauxGame
             _graphics.GraphicsDevice.Clear(Color.CornflowerBlue);
             
             _componentSubject.Draw(gameTime, _spriteBatch, _camera);
+
+            InGameDebugger.Flush();
 
             base.Draw(gameTime);
         }

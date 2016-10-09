@@ -10,7 +10,7 @@
 
 #-------------------------------- References --------------------------------#
 
-/reference:../../packages/MonoGame.Extended.0.5.149/lib/MonoGame.Extended.Content.Pipeline.dll
+/reference:../../packages/MonoGame.Extended.0.5.533-beta/lib/MonoGame.Extended.Content.Pipeline.dll
 
 #---------------------------------- Content ---------------------------------#
 
@@ -112,4 +112,28 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:gui/cursor-3-xxl.png
+
+#begin sprites/players/player1.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:sprites/players/player1.png
+
+#begin sprites/objects.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:sprites/objects.png
 

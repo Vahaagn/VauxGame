@@ -1,16 +1,17 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MonoGame.Extended;
+using VauxGame.Handlers;
 
 namespace VauxGame.Components
 {
-    public class Cursor : IComponent, IMovable
+    public class Cursor : IComponent, Components.IMovable
     {
         #region - Fields -
-        private Vector2 _position;
+        public Vector2 Position { get; set; }
         private Vector2 _size;
         private Texture2D _texture;
+        private InputHandler _inputHandler;
         #endregion
 
         #region - Properties -
@@ -22,13 +23,16 @@ namespace VauxGame.Components
         public Cursor()
         {
             _size = new Vector2(25);
+            _inputHandler = ComponentManager.Instance.GetInstance<InputHandler>();
+
+            RegisterEvents();
         }
         #endregion
 
         #region - Public methods -
         public void MoveTo(Vector2 position)
         {
-            _position = position;
+            Position = position;
         }
 
         public void LoadContent(Microsoft.Xna.Framework.Content.ContentManager content)
@@ -48,8 +52,18 @@ namespace VauxGame.Components
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            var destinationRectangle = new Rectangle(_position.ToPoint(), _size.ToPoint());
+            var destinationRectangle = new Rectangle(Position.ToPoint(), _size.ToPoint());
             spriteBatch.Draw(_texture, destinationRectangle, Color.White);
+        }
+        #endregion
+
+        #region - Private methods -
+
+        private void RegisterEvents()
+        {
+            _inputHandler.MouseListener.MouseMoved += (sender, args) => {
+                MoveTo(args.Position.ToVector2());
+            };
         }
         #endregion
     }
